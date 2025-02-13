@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}<title>Edit Organization</title>{% endblock %}
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1>Edit Organization</h1>
+        </div>
+    </div>
+    <form method="post" class="row g-3" novalidate>
+        {% csrf_token %}
+        <div class="col-md-3 col-sm-12">
+            <label for="code" class="form-label">Org. Code</label>
+            <input type="text"
+                   id="code"
+                   name="code"
+                   class="form-control"
+                   value="{{ org.code_org }}"
+                   required />
+            <div class="invalid-feedback">Please input Data</div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <label for="nameth" class="form-label">Org. Name TH</label>
+            <input type="text"
+                   id="nameth"
+                   name="nameth"
+                   class="form-control"
+                   value="{{ org.nameTH_org }}" />
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <label for="nameen" class="form-label">Org. Name EN</label>
+            <input type="text"
+                   id="nameen"
+                   name="nameen"
+                   class="form-control"
+                   value="{{ org.nameEN_org }}"
+                   required />
+            <div class="invalid-feedback">Please input Data</div>
+        </div>
+        <div class="col-12">
+            <a href="{% url 'indexOrg' %}" class="btn btn-secondary me-2">
+                <span>Back</span>
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <span>Submit</span>
+            </button>
+        </div>
+    </form>
+{% endblock %}
+{% block script %}
+    <script type="text/javascript">
+    $(document).ready(()=>{
+        $("form").on('submit', (e)=>{
+            if(!$(e.currentTarget)[0].checkValidity()){
+                e.preventDefault();
+            }
+            $(e.currentTarget).addClass('was-validated');
+        });
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="description"
+              content="เว็บไซต์นี้ให้ข้อมูลเกี่ยวกับ HTML, CSS และการพัฒนาเว็บ">
+        <meta name="keywords"
+              content="HTML, CSS, JavaScript, เว็บดีไซน์, การพัฒนาเว็บ">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <h1>Add Super User</h1>
+        <form method="post" action="{% url 'addSuperUser' %}">
+            {% csrf_token %}
+            <div>
+                <p>User name</p>
+                <input type="text" name="uname">
+            </div>
+            <div>
+                <p>Password</p>
+                <input type="text" id="pass" name="pass" />
+            </div>
+            <br />
+            <div>
+                <button type="submit">
+                    <span>Submit</span>
+                </button>
+            </div>
+        </form>
+    </body>
+</html>

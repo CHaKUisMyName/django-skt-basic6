@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}<title>Register User</title>{% endblock %}
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1>Register User</h1>
+        </div>
+    </div>
+    <form method="post" class="row g-3 mb-3">
+        {% csrf_token %}
+        <div class="col-md-6 col-sm-12">
+            <label for="uname" class="form-label">Username</label>
+            <input type="text" class="form-control" id="uname" name="uname" />
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="password" class="form-label">Password</label>
+            <input type="text" id="password" name="password" class="form-control" />
+        </div>
+        <div class="col-12">
+            <a href="{% url 'indexUser' %}" class="btn btn-secondary me-2">Back</a>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block css %}
+    <link href="{% static 'css/sweetalert2.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block title %}<title>INDEX</title>{% endblock %}
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1>CHAKU</h1>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'addUser' %}">
+                <span>Add User</span>
+            </a>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Detail</th>
+                            <th>Email</th>
+                            <th>Register</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if not users|length %}
+                            <tr>
+                                <td colspan="6">
+                                    <span>No Data !</span>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <span>{{ user.fullName }}</span>
+                                    <span>( {{ user.code }} )</span>
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.hasAccount %}
+                                        <!-- ซ่อนปุ่ม Register หาก user มี account -->
+                                        <button type="button" class="btn btn-secondary disabled">Registered</button>
+                                    {% else %}
+                                        <!-- <a href="/regis/{{ user.id_u }}" class="btn btn-warning">Register</a> -->
+                                        <a href="{% url 'regisUser' user.id_u %}" class="btn btn-warning">Register</a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'editUser' user.id_u %}" class="btn btn-info">
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Edit</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-danger delete"
+                                            data-idu="{{ user.id_u }}">
+                                        <i class="bi bi-trash"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+    {% if messages %}
+        {% for message in messages %}
+            <script type="text/javascript">
+                $(document).ready(() => {
+                    const mssTags = "{{message.tags}}";
+                    console.log(mssTags);
+                    const mss = "{{message}}";
+                    const mssH = mssTags == "error" ? "Error":"Success";
+                    let txtColor = mssTags == "error" ? "error":"success";
+                
+                    Swal.fire({
+                        title: mssH,
+                        text: mss,
+                        icon: txtColor,
+                    });
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+    <script type="text/javascript">
+        $(document).ready(()=>{
+            
+        });
+        $('.delete').click((e)=>{
+            e.preventDefault();
+            console.log($(e.currentTarget).data("idu"));
+            Swal.fire({
+                title: "Do you want to Delete the User ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Delete",
+                didOpen: () => {
+                    // ดักจับ event keydown ใน SweetAlert2 modal
+                    document.querySelector('.swal2-popup').addEventListener('keydown', (event) => {
+                        if (event.key === "Enter") {
+                            event.preventDefault(); // ป้องกัน Enter ไม่ให้กด confirm
+                        }
+                    });
+                },
+                }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    const settings = {
+                        url: window.location.origin + window.location.pathname+"deleteuser/"+$(e.currentTarget).data("idu"),
+                        method: "GET",
+                    };
+                    $.ajax(settings)
+                    .done((response)=>{
+                        console.log(response);
+                        if(response.deleted == true){
+                            Swal.fire("Deleted!", "", "success").then(()=>{location.reload();});
+                        }else{
+                            Swal.fire(response.mss, "", "error");
+                        }
+                    })
+                    .fail((xhr, status, error)=>{
+                        console.error("เกิดข้อผิดพลาด: " + status + " - " + error);
+                        Swal.fire(error, "", "error");
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

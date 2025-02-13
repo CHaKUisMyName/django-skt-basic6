@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block css %}
+    <link href="{% static 'css/sweetalert2.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block title %}<title>Organization</title>{% endblock %}
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1>Level</h1>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'addLv' %}">
+                <span>Add Level</span>
+            </a>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Code</th>
+                            <th>Name TH</th>
+                            <th>Name EN</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if not lvs|length %}
+                            <tr>
+                                <td colspan="6">
+                                    <span>No Data!</span>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% for lv in lvs %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ lv.code_lv }}</td>
+                                <td>{{ lv.nameTH_lv }}</td>
+                                <td>{{ lv.nameEN_lv }}</td>
+                                <td>
+                                    <a href="{% url 'editLv' lv.id_lv %}" class="btn btn-info">
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Edit</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-danger delete"
+                                            data-idlv="{{ lv.id_lv }}">
+                                        <i class="bi bi-trash"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+    {% if messages %}
+        {% for message in messages %}
+            <script type="text/javascript">
+                $(document).ready(() => {
+                    const mssTags = "{{message.tags}}";
+                    console.log(mssTags);
+                    const mss = "{{message}}";
+                    const mssH = mssTags == "error" ? "Error":"Success";
+                    let txtColor = mssTags == "error" ? "error":"success";
+                
+                    Swal.fire({
+                        title: mssH,
+                        text: mss,
+                        icon: txtColor,
+                    });
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+    <script type="text/javascript">
+        $('.delete').click((e)=>{
+            e.preventDefault();
+            console.log($(e.currentTarget).data('idlv'));
+            Swal.fire({
+                title: "Do you want to Delete the Level ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Delete"
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    const settings = {
+                        url: window.location.origin + window.location.pathname + "deletelv/" + $(e.currentTarget).data('idlv'),
+                        method: "GET",
+                    }
+                    $.ajax(settings)
+                    .done((response)=>{
+                        if(response.deleted == true){
+                            Swal.fire("Delete success", "", "success").then(()=>{ location.reload(); });
+                        }else{
+                            Swal.fire(response.mss, "", "error");
+                        }
+                    })
+                    .fail((xhr, status, error)=>{
+                        console.error("เกิดข้อผิดพลาด: " + status + " - " + error);
+                        Swal.fire(error, "", "error");
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

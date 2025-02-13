@@ -1,0 +1,113 @@
+.toggler-btn {
+  background-color: transparent;
+  cursor: pointer;
+  border: 0;
+}
+
+.toggler-btn i {
+  font-size: 1.75rem;
+  color: #000;
+  font-weight: 1000;
+}
+.navbar {
+  padding: 0.5rem 0rem;
+  /* border-bottom: 1px solid #d3d3d3; */
+}
+.main {
+  margin-left: 264px;
+  padding: 0px 20px;
+  transition: all 0.35s ease;
+}
+.main.collapsed {
+  margin-left: 0px;
+  transition: all 0.35s ease;
+}
+.sidebar {
+  /* max-width: 100%; */
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  max-width: 264px;
+  min-width: 264px;
+  min-height: 100%;
+  /* transition: all 0.35s ease-in-out; */
+  transition: all 0.35s ease;
+  background-color: #0e0118;
+  display: flex; /* ใช้ Flexbox ในการจัดเรียงเนื้อหาภายใน #sidebar */
+  flex-direction: column; /* กำหนดให้ Flexbox จัดเรียงเนื้อหาภายในในลักษณะแนวตั้ง (จากบนลงล่าง) */
+  position: fixed;
+}
+.sidebar.collapsed {
+  margin-left: -264px;
+  /* position: unset; */
+}
+.sidebar-nav {
+  flex: 1 1 auto;
+  list-style: none;
+  padding: 0rem 0rem;
+}
+.sidebar-logo {
+  padding: 1.15rem 1.5rem;
+  text-align: center;
+}
+
+.sidebar-logo a {
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+.sidebar-header {
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 1.5rem 1.5rem 0.375rem;
+}
+
+a.sidebar-link {
+  padding: 0.625rem 1.625rem;
+  color: #fff;
+  position: relative;
+  transition: all 0.35s;
+  display: block;
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+a.sidebar-link:hover {
+  background-color: #f9f6f630;
+}
+
+.sidebar-link[data-bs-toggle="collapse"]::after {
+  border: solid;
+  border-width: 0 0.075rem 0.075rem 0;
+  content: "";
+  display: inline-block;
+  padding: 2px;
+  position: absolute;
+  right: 1.5rem;
+  top: 1.4rem;
+  transform: rotate(-135deg);
+  transition: all 0.2s ease-out;
+}
+
+.sidebar-link[data-bs-toggle="collapse"].collapsed::after {
+  transform: rotate(45deg);
+  transition: all 0.2s ease-out;
+}
+
+/* Screen size less than 768px */
+
+@media (max-width: 768px) {
+  .sidebar {
+    margin-left: -264px;
+  }
+
+  .sidebar.collapsed {
+    margin-left: 0;
+  }
+  .main {
+    margin-left: 0px;
+    padding: 0px 20px;
+  }
+  .main.collapsed {
+    margin-left: 264px;
+  }
+}

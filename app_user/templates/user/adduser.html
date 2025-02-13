@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block css %}
+    <!-- Tempus Dominus Styles -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css"
+          crossorigin="anonymous">
+    <!-- fontawesome -->
+    <link href="{% static 'css/fontawesome/css/fontawesome.min.css' %}"
+          rel="stylesheet">
+    <link href="{% static 'css/fontawesome/css/solid.min.css' %}"
+          rel="stylesheet">
+    <link href="{% static 'css/fontawesome/css/brands.min.css' %}"
+          rel="stylesheet">
+{% endblock %}
+{% block title %}<title>Add User</title>{% endblock %}
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1>Add User</h1>
+        </div>
+    </div>
+    <form method="post"
+          class="row mb-3 g-3"
+          action="{% url 'addUser' %}"
+          novalidate>
+        {% csrf_token %}
+        <div class="col-md-2 col-sm-12">
+            <label for="code" class="form-label">Employee Code</label>
+            <input type="text" class="form-control" id="code" name="code" required />
+            <div class="invalid-feedback">Please input data</div>
+        </div>
+        <div class="col-md-5 col-sm-12">
+            <label for="fnameen" class="form-label">First Name (EN)</label>
+            <input type="text" id="fnameen" name="fnameen" class="form-control" required />
+            <div class="invalid-feedback">Please input data</div>
+        </div>
+        <div class="col-md-5 col-sm-12">
+            <label for="lnameen" class="form-label">Last Name (EN)</label>
+            <input type="text" id="lnameen" name="lnameen" class="form-control" required />
+            <div class="invalid-feedback">Please input data</div>
+        </div>
+        <div class="col-md-5 col-sm-12">
+            <label for="fnameth" class="form-label">First Name (TH)</label>
+            <input type="text" id="fnameth" name="fnameth" class="form-control" />
+        </div>
+        <div class="col-md-5 col-sm-12">
+            <label for="lnameth" class="form-label">Last Name (TH)</label>
+            <input type="text" id="lnameth" name="lnameth" class="form-control" />
+        </div>
+        <div class="col-md-2 col-sm-12">
+            <label for="nickname" class="form-label">Nick Name</label>
+            <input type="text" id="nickname" name="nickname" class="form-control" />
+        </div>
+        <div class="col-md-1 col-sm-12">
+            <label for="nation" class="form-label">Naition</label>
+            <input type="text" id="nation" name="nation" class="form-control" />
+        </div>
+        <div class="col-md-3 col-sm-12">
+            <label for="birthday" class="form-label">Birth Date</label>
+            <input type="text" id="birthday" name="birthday" class="form-control" />
+            <div class="invalid-feedback">Please input date format (DD/MM/YYYY)</div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <label for="email" class="form-label">Email</label>
+            <input type="text" id="email" name="email" class="form-control" />
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" id="phone" name="phone" class="form-control" />
+        </div>
+        <div class="col-12">
+            <div class="form-check">
+                <input type="checkbox" id="isadmin" name="isadmin" class="form-check-input" />
+                <label for="isadmin" class="form-check-label">Is Admin</label>
+            </div>
+        </div>
+        <div class="col-12">
+            <a href="{% url 'indexUser' %}" class="btn btn-secondary me-2">
+                <span>Back</span>
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <span>Submit</span>
+            </button>
+        </div>
+    </form>
+{% endblock %}
+{% block script %}
+    <!-- Popperjs -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+            crossorigin="anonymous"></script>
+    <!-- Tempus Dominus JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js"
+            crossorigin="anonymous"></script>
+    <!-- fontawesome -->
+    <script src="{% static 'js/fontawesome.min.js' %}"></script>
+    <script src="{% static 'js/solid.min.js' %}"></script>
+    <script src="{% static 'js/brands.min.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(()=>{
+            var dp = new tempusDominus.TempusDominus(document.getElementById("birthday"),{
+                useCurrent: false, // ไม่ให้มีค่าเริ่มต้นที่อาจผิดพลาด
+                localization: {
+                    format: "dd/MM/yyyy",
+                    hourCycle: "h24",
+                },
+                display: {
+                    
+                    buttons: {
+                    today: true,
+                    clear: true,
+                    close: true,
+                    },
+                    //sideBySide: true,
+                    viewMode: "calendar",
+                    components: {
+                    decades: true,
+                    year: true,
+                    month: true,
+                    date: true,
+                    hours: false,
+                    minutes: false,
+                    seconds: false,
+                    },
+                },
+                
+            });
+            $('#birthday').change((e)=>{
+                const dateValue = $(e.currentTarget).val();
+                // console.log(dateValue);
+                if(dateValue){
+                    if (!isValidDateFormat(dateValue)) {
+                        $(e.currentTarget)[0].setCustomValidity("Invalid");
+                    } else {
+                        $(e.currentTarget)[0].setCustomValidity("");
+                    }
+                }else{
+                    $(e.currentTarget)[0].setCustomValidity("");
+                }
+                $("form").addClass("was-validated"); // ทำให้ Bootstrap แสดงผล
+            });
+            (function () {
+                'use strict';
+                document.querySelector('form').addEventListener('submit', function (event) {
+                    if (!this.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.classList.add('was-validated');
+                    }
+                    this.classList.add('was-validated');
+                }, false);
+            })();
+            
+        });
+        // ฟังก์ชันเช็คว่า input มีค่าตรงกับ dd/mm/yyyy หรือไม่
+        function isValidDateFormat(dateString) {
+            const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+            return regex.test(dateString);
+        }
+    </script>
+{% endblock %}

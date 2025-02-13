@@ -1,0 +1,241 @@
+from datetime import datetime, timedelta
+import hashlib
+import os
+import pprint
+import secrets
+from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
+from django.contrib import messages
+from django.utils.timezone import now
+
+from app_user.models.authsession import AuthSession
+from app_user.models.authuser import AuthUser, VerifyPAssword
+from app_user.models.user import User
+from app_user.utils import requiredLogin
+
+# Create your views here.
+@requiredLogin
+def index(request: HttpRequest):
+    usersList = User.objects.filter(isActive_u = 1)
+    users = []
+    if usersList.count() > 0:
+        authUsers = AuthUser.objects.filter(isActive_auth = 1)
+        for user in usersList:
+            hasAccount = False
+            if authUsers.count() > 0:
+                hasAccount = any(authUser.id_u_auth == user.id_u for authUser in authUsers)
+
+            users.append({
+                "id_u": user.id_u,
+                "fullName": user.fNameEN_u + " " + user.lNameEN_u,
+                "code": user.code_u,
+                "email": user.email_u,
+                "hasAccount": hasAccount,
+            })
+
+    context = {
+        'users': users
+    }
+    return render(request, 'user/index.html', context)
+
+@requiredLogin
+def AddUser(request: HttpRequest):
+    if request.method == "POST":
+        response = HttpResponseRedirect(reverse('indexUser'))
+        try:
+            currentUser: User = request.currentUser
+            # format from input
+            formatStr = "%d/%m/%Y"
+            
+            user = User()
+            user.code_u = request.POST.get('code')
+            user.fNameEN_u = request.POST.get('fnameen')
+            user.lNameEN_u = request.POST.get('lnameen')
+            user.fNameTH_u = request.POST.get('fnameth')
+            user.lNameTH_u = request.POST.get('lnameth')
+            user.nickName_u = request.POST.get('nickname')
+            user.nation_u = request.POST.get('nation')
+            user.email_u = request.POST.get('email')
+            user.phone_u = request.POST.get('phone')
+            user.isAdmin_u = 1 if request.POST.get('isadmin') is not None else 0
+            user.isActive_u = 1
+            user.cById_u = currentUser.id_u
+            user.cDate_u = now()
+            if request.POST.get('birthday'):
+                user.birthDay_u = datetime.strptime(str(request.POST.get('birthday')),formatStr).date()
+            else:
+                user.birthDay_u = ""
+
+            user.save()
+            messages.success(request, "Save Success")
+            return response
+        except Exception as ex:
+            print(str(ex))
+            messages.error(request, str(ex))
+            return response
+
+    return render(request, 'user/adduser.html')
+
+@requiredLogin
+def EditUser(request:HttpRequest, iduser):
+    response = HttpResponseRedirect(reverse('indexUser'))
+    user = User.objects.filter(id_u = iduser).first()
+    if user is None:
+        messages.error(request, 'Not Found User.')
+        return response
+    
+    if request.method == "POST":
+        try:
+            currentUser: User = request.currentUser
+            # format from input
+            formatStr = "%d/%m/%Y"
+            
+            user.code_u = request.POST.get('code')
+            user.fNameEN_u = request.POST.get('fnameen')
+            user.lNameEN_u = request.POST.get('lnameen')
+            user.fNameTH_u = request.POST.get('fnameth')
+            user.lNameTH_u = request.POST.get('lnameth')
+            user.nickName_u = request.POST.get('nickname')
+            user.nation_u = request.POST.get('nation')
+            user.email_u = request.POST.get('email')
+            user.phone_u = request.POST.get('phone')
+            user.isAdmin_u = 1 if request.POST.get('isadmin') is not None else 0
+            user.isActive_u = 1
+            user.uById_u = currentUser.id_u
+            user.uDate_u = now()
+            if request.POST.get('birthday'):
+                user.birthDay_u = datetime.strptime(str(request.POST.get('birthday')),formatStr).date()
+            else:
+                user.birthDay_u = ""
+            
+            user.save()
+            
+            messages.success(request, 'Success')
+        except Exception as ex:
+            messages.error(request, str(ex))
+        return response
+    
+    context = {
+        'user': user
+    }
+    return render(request, 'user/edituser.html', context)
+
+@requiredLogin
+def Delete(request: HttpRequest, iduser):
+    try:
+        currentUser: User = request.currentUser
+        user = User.objects.filter(id_u = iduser).first()
+        if user is None:
+            data = {
+                "deleted": False,
+                "mss": "not found user"
+            }
+            return JsonResponse(data)
+        user.isActive_u = 0
+        user.uDate_u = now()
+        user.uById_u = currentUser.id_u
+        user.save()
+        rData = {
+            "deleted": True,
+            "mss": "delete success"
+        }
+        return JsonResponse(rData)
+    except Exception as ex:
+        data = {
+            "deleted": False,
+            "mss": str(ex)
+        }
+        return JsonResponse(data)
+
+def login(request: HttpRequest):
+    if request.method == "POST":
+        uname = request.POST.get('uname')
+        password = request.POST.get('password')
+
+        authUser = AuthUser.objects.filter(user_auth = uname).first()
+        if authUser is None:
+            # messages.error(request, "Not Found User!")
+            return HttpResponseRedirect("/login")
+        
+        if VerifyPAssword(password,authUser.pass_auth) == False:
+            # messages.error(request, "wrong Password")
+            return HttpResponseRedirect("/login")
+        
+        try:
+            session = AuthSession()
+            session.session_ss = secrets.token_hex(20)
+            session.expireDate_ss = now() + timedelta(days=1)
+            session.SaveSessionData({'user_id': authUser.id_u_auth})
+            session.save()
+
+            # update time stamp login
+            authUser.lastLogin_auth = now()
+            authUser.save()
+        except Exception as ex:
+            # messages.error(request, str(ex))
+            return HttpResponseRedirect("/login")
+        
+
+        response = HttpResponseRedirect("/")
+        response.set_cookie('session',session.session_ss,expires=session.expireDate_ss)
+        return response
+    else:
+        return render(request, 'user/login.html')
+
+@requiredLogin
+def logout(request: HttpRequest):
+    session = request.COOKIES.get("session")
+    authSession = AuthSession.objects.filter(session_ss=session).first()
+    if authSession:
+        authSession.delete()
+    response = HttpResponseRedirect('/login')
+    response.delete_cookie('session')
+    return response
+
+@requiredLogin
+def regisUser(request: HttpRequest, iduser):
+    user = User.objects.filter(id_u = iduser).first()
+    if user is None:
+        messages.error(request, "Not Found User!")
+        return HttpResponseRedirect(reverse('indexUser'))
+    
+    if request.method == "POST":
+        try:
+            authUser = AuthUser()
+            authUser.user_auth = request.POST.get('uname')
+            authUser.HashPassword(request.POST.get('password'))
+            authUser.id_u_auth = user.id_u
+            authUser.isActive_auth = 1
+            authUser.cDate_auth = now()
+            authUser.save()
+
+            messages.success(request, "Register Success")
+        except Exception as ex:
+            messages.error(request, str(ex))
+        return HttpResponseRedirect(reverse('indexUser'))
+
+    return render(request, 'user/regis.html')
+
+def AddSuperUser(request: HttpRequest):
+    if request.method == "POST":
+        try:
+            user = User()
+            user.code_u = '000'
+            user.fNameEN_u = 'super'
+            user.lNameEN_u = 'user'
+            user.isAdmin_u = 1
+            user.isActive_u = 1
+            user.save()
+
+            authUser = AuthUser()
+            authUser.user_auth = request.POST.get('uname')
+            authUser.HashPassword(request.POST.get('pass'))
+            authUser.id_u_auth = user.id_u
+            authUser.isActive_auth = 1
+            authUser.save()
+
+            return JsonResponse({"success": True})
+        except Exception as ex:
+            return JsonResponse({'success': False, 'mss': repr(ex)})
+    return render(request, 'user/addsuperuser.html')

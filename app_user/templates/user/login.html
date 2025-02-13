@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description"
+              content="เว็บไซต์นี้ให้ข้อมูลเกี่ยวกับ HTML, CSS และการพัฒนาเว็บ">
+        <meta name="keywords"
+              content="HTML, CSS, JavaScript, เว็บดีไซน์, การพัฒนาเว็บ">
+        <title>Document</title>
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <style>
+            .login-panel{
+                max-width: 330px;
+                padding: 1rem;
+            }
+            .body{
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body class="d-flex align-items-center justify-content-center min-vh-100 bg-body-tertiary">
+        <main class="w-100 m-auto login-panel text-center">
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <img src="{% static 'images/pngegg.png' %}"
+                     class="rounded-circle"
+                     alt="..."
+                     width="72"
+                     height="90">
+                <h1 class="h3 mb-3 fw-normal">Please Login</h1>
+                <div class="form-floating mb-3">
+                    <input type="text"
+                           class="form-control"
+                           id="uname"
+                           name="uname"
+                           placeholder="User Name">
+                    <label for="uname" place>User Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           placeholder="Password">
+                    <label for="password">Password</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 my-3">
+                    <span>LOGIN</span>
+                </button>
+            </form>
+        </main>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    </body>
+</html>
