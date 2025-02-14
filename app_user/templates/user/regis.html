@@ -7,19 +7,37 @@
             <h1>Register User</h1>
         </div>
     </div>
-    <form method="post" class="row g-3 mb-3">
+    <form method="post" class="row g-3 mb-3" novalidate>
         {% csrf_token %}
         <div class="col-md-6 col-sm-12">
             <label for="uname" class="form-label">Username</label>
-            <input type="text" class="form-control" id="uname" name="uname" />
+            <input type="text" class="form-control" id="uname" name="uname" required />
+            <div class="invalid-feedback">Please input Data</div>
         </div>
         <div class="col-md-6 col-sm-12">
             <label for="password" class="form-label">Password</label>
-            <input type="text" id="password" name="password" class="form-control" />
+            <input type="text"
+                   id="password"
+                   name="password"
+                   class="form-control"
+                   required />
+            <div class="invalid-feedback">Please input Data</div>
         </div>
         <div class="col-12">
             <a href="{% url 'indexUser' %}" class="btn btn-secondary me-2">Back</a>
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </form>
+{% endblock %}
+{% block script %}
+    <script type="text/javascript">
+        $(document).ready(()=>{
+            $("form").on('submit', (e)=>{
+                if(!$(e.currentTarget)[0].checkValidity()){
+                    e.preventDefault();
+                }
+                $(e.currentTarget).addClass('was-validated');
+            });
+        });
+    </script>
 {% endblock %}
