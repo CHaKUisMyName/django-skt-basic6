@@ -9,7 +9,7 @@
     </div>
     <form method="post" class="row g-3" novalidate>
         {% csrf_token %}
-        <input type="hidden" value="{{ lv.id_lv }}" />
+        <input type="hidden" name="lvid" value="{{ lv.id_lv }}" />
         <div class="col-md-3 col-sm-12">
             <label for="code" class="form-label">Level Code</label>
             <input type="text"

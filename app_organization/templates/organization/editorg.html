@@ -9,6 +9,7 @@
     </div>
     <form method="post" class="row g-3" novalidate>
         {% csrf_token %}
+        <input type="hidden" name="orgid" value="{{ org.id_org }}" />
         <div class="col-md-3 col-sm-12">
             <label for="code" class="form-label">Org. Code</label>
             <input type="text"

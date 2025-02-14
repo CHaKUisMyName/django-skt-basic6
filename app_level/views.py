@@ -46,13 +46,19 @@ def addLevel(request: HttpRequest):
 
 @requiredLogin
 def editLv(request: HttpRequest, idlv):
-    lv = Level.objects.filter(id_lv = idlv).first()
-    if lv is None:
-        messages.error(request, "Not Found Level.")
-        return HttpResponseRedirect(reverse('indexLv'))
+    
     
     if request.method == "POST":
         try:
+            lvid = request.POST.get('lvid')
+            if not lvid:
+                messages.error(request, 'Not found Level id')
+                return HttpResponseRedirect(reverse('indexLv'))
+            lv = Level.objects.filter(id_lv = lvid).first()
+            if lv == None:
+                messages.error(request, 'Not found Level')
+                return HttpResponseRedirect(reverse('indexLv'))
+
             currentUser: User = request.currentUser
             lv.code_lv =  request.POST.get('code')
             lv.nameEN_lv = request.POST.get('nameen')
@@ -64,12 +70,15 @@ def editLv(request: HttpRequest, idlv):
         except Exception as ex:
             messages.error(request, str(ex))
         return HttpResponseRedirect(reverse('indexLv'))
-    
-    context = {
-        "lv": lv
-    }
-    
-    return render(request, 'level/editlv.html',context)
+    else:
+        lv = Level.objects.filter(id_lv = idlv).first()
+        if lv is None:
+            messages.error(request, "Not Found Level.")
+            return HttpResponseRedirect(reverse('indexLv'))
+        context = {
+            "lv": lv
+            }
+        return render(request, 'level/editlv.html',context)
 
 @requiredLogin
 def deleteLv(request: HttpRequest, idlv):

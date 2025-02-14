@@ -44,14 +44,17 @@ def addOrg(request: HttpRequest):
 
 @requiredLogin
 def editOrg(request: HttpRequest, idorg):
-    org = Organization.objects.filter(id_org = idorg).first()
-
-    if org is None:
-        messages.error(request, "Not Found Organization.")
-        return HttpResponseRedirect(reverse('indexOrg'))
-    
     if request.method == "POST":
         try:
+            orgid = request.POST.get('orgid')
+            if not orgid:
+                messages.error(request, "Not Found Organization id.")
+                return HttpResponseRedirect(reverse('indexOrg'))
+            org = Organization.objects.filter(id_org = orgid).first()
+            if org is None:
+                messages.error(request, "Not Found Organization.")
+                return HttpResponseRedirect(reverse('indexOrg'))
+
             currentUser: User = request.currentUser
             org.code_org = request.POST.get('code')
             org.nameEN_org = request.POST.get('nameen')
@@ -63,11 +66,16 @@ def editOrg(request: HttpRequest, idorg):
         except Exception as ex:
             messages.error(request, str(ex))
         return HttpResponseRedirect(reverse('indexOrg'))
-    
-    context = {
-        "org": org
-    }
-    return render(request, 'organization/editorg.html', context)
+    else:
+        org = Organization.objects.filter(id_org = idorg).first()
+        if org is None:
+            messages.error(request, "Not Found Organization.")
+            return HttpResponseRedirect(reverse('indexOrg'))
+        
+        context = {
+            "org": org
+            }
+        return render(request, 'organization/editorg.html', context)
 
 @requiredLogin
 def deleteOrg(request: HttpRequest, idorg):

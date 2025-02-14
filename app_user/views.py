@@ -80,13 +80,18 @@ def AddUser(request: HttpRequest):
 @requiredLogin
 def EditUser(request:HttpRequest, iduser):
     response = HttpResponseRedirect(reverse('indexUser'))
-    user = User.objects.filter(id_u = iduser).first()
-    if user is None:
-        messages.error(request, 'Not Found User.')
-        return response
     
     if request.method == "POST":
         try:
+            uid = request.POST.get('uid')
+            if not uid:
+                messages.error(request, "Not Found User id.")
+                return response
+            user = User.objects.filter(id_u = uid).first()
+            if user == None:
+                messages.error(request, "Not Found User.")
+                return response
+            
             currentUser: User = request.currentUser
             # format from input
             formatStr = "%d/%m/%Y"
@@ -103,7 +108,7 @@ def EditUser(request:HttpRequest, iduser):
             user.isAdmin_u = 1 if request.POST.get('isadmin') is not None else 0
             user.isActive_u = 1
             user.uById_u = currentUser.id_u
-            user.uDate_u = now()
+            # user.uDate_u = now()
             if request.POST.get('birthday'):
                 user.birthDay_u = datetime.strptime(str(request.POST.get('birthday')),formatStr).date()
             else:
@@ -115,11 +120,16 @@ def EditUser(request:HttpRequest, iduser):
         except Exception as ex:
             messages.error(request, str(ex))
         return response
-    
-    context = {
-        'user': user
-    }
-    return render(request, 'user/edituser.html', context)
+    else:
+        user = User.objects.filter(id_u = iduser).first()
+        if user is None:
+            messages.error(request, 'Not Found User.')
+            return response
+        
+        context = {
+            'user': user
+            }
+        return render(request, 'user/edituser.html', context)
 
 @requiredLogin
 def Delete(request: HttpRequest, iduser):

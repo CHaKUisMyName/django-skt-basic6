@@ -22,6 +22,7 @@
     </div>
     <form method="post" class="row g-3" novalidate>
         {% csrf_token %}
+        <input type="hidden" name="uid" value="{{ user.id_u }}" />
         <div class="col-md-2 col-sm-12">
             <label for="code" class="form-label">Employee Code</label>
             <input type="text"
