@@ -27,6 +27,7 @@
                             <th>Detail</th>
                             <th>Email</th>
                             <th>Register</th>
+                            <th>Repassword</th>
                             <th>Edit</th>
                             <th>Delete</th>
                         </tr>
@@ -34,7 +35,7 @@
                     <tbody>
                         {% if not users|length %}
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <span>No Data !</span>
                                 </td>
                             </tr>
@@ -54,6 +55,15 @@
                                     {% else %}
                                         <!-- <a href="/regis/{{ user.id_u }}" class="btn btn-warning">Register</a> -->
                                         <a href="{% url 'regisUser' user.id_u %}" class="btn btn-warning">Register</a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.hasAccount %}
+                                        <!-- ซ่อนปุ่ม Register หาก user มี account -->
+                                        <a href="{% url 'repassUser' user.id_u %}" class="btn btn-warning">Repassword</a>
+                                    {% else %}
+                                        <!-- <a href="/regis/{{ user.id_u }}" class="btn btn-warning">Register</a> -->
+                                        <button type="button" class="btn btn-secondary disabled">No Account</button>
                                     {% endif %}
                                 </td>
                                 <td>

@@ -142,10 +142,23 @@ def Delete(request: HttpRequest, iduser):
                 "mss": "not found user"
             }
             return JsonResponse(data)
+        
+        authUser = AuthUser.objects.filter(id_u_auth = user.id_u).first()
+        if authUser is None:
+            data = {
+                "deleted": False,
+                "mss": "not found user"
+            }
+            return JsonResponse(data)
+
         user.isActive_u = 0
         user.uDate_u = now()
         user.uById_u = currentUser.id_u
         user.save()
+
+        authUser.isActive_auth = 0
+        authUser.save()
+
         rData = {
             "deleted": True,
             "mss": "delete success"
@@ -226,6 +239,50 @@ def regisUser(request: HttpRequest, iduser):
         return HttpResponseRedirect(reverse('indexUser'))
 
     return render(request, 'user/regis.html')
+
+@requiredLogin
+def Changepassword(request: HttpRequest, iduser):
+    if request.method == "POST":
+        idAuth = request.POST.get('authid')
+        if not idAuth:
+            messages.error(request, "Not Found Auth User accout!")
+            return HttpResponseRedirect(reverse('indexUser'))
+        authUser = AuthUser.objects.filter(id_auth = idAuth).first()
+        if authUser is None:
+            messages.error(request, "Not Found Auth User Data!")
+            return HttpResponseRedirect(reverse('indexUser'))
+        passData = request.POST.get('password')
+        if not passData:
+            messages.error(request, "Not Found Password!")
+            return HttpResponseRedirect(reverse('indexUser'))
+        
+        try:
+            authUser.HashPassword(str(passData))
+            authUser.save()
+            authSesstion = AuthSession.objects.all()
+            if authSesstion:
+                for authSS in authSesstion:
+                    data = authSS.GetSessionData()
+                    if data['user_id'] == authUser.id_u_auth:
+                        authSS.delete()
+            messages.success(request, "Change Password Success")
+            return HttpResponseRedirect(reverse('indexUser'))
+        except Exception as ex:
+            messages.error(request, str(ex))
+            return HttpResponseRedirect(reverse('indexUser'))
+    else:
+        user = User.objects.filter(id_u = iduser).first()
+        if user is None:
+            messages.error(request, "Not Found User!")
+            return HttpResponseRedirect(reverse('indexUser'))
+        authUser = AuthUser.objects.filter(id_u_auth = user.id_u).first()
+        if authUser is None:
+            messages.error(request, "Not Found Auth User Data!")
+            return HttpResponseRedirect(reverse('indexUser'))
+        context = {
+            "authUser": authUser
+        }
+        return render(request, 'user/changepassword.html', context)
 
 def AddSuperUser(request: HttpRequest):
     if request.method == "POST":
