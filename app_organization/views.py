@@ -26,6 +26,10 @@ def addOrg(request: HttpRequest):
     if request.method == "POST":
         response = HttpResponseRedirect(reverse('indexOrg'))
         try:
+            dupOrg = Organization.objects.filter(code_org = request.POST.get('code')).first()
+            if dupOrg:
+                messages.error(request, 'Duplicate Org Code')
+                return response
             currentUser: User = request.currentUser
             org = Organization()
             org.code_org = request.POST.get('code')

@@ -2,6 +2,8 @@
 {% load static %}
 {% block css %}
     <link href="{% static 'css/sweetalert2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/dataTables.bootstrap5.css' %}" rel="stylesheet">
 {% endblock %}
 {% block title %}<title>Organization</title>{% endblock %}
 {% block content %}
@@ -20,7 +22,7 @@
     <div class="row mb-3">
         <div class="col-12">
             <div class="table-responsive">
-                <table class="table">
+                <table id="tb" class="table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -69,6 +71,8 @@
 {% endblock %}
 {% block script %}
     <script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'js/datatables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.bootstrap5.js' %}"></script>
     {% if messages %}
         {% for message in messages %}
             <script type="text/javascript">
@@ -89,6 +93,9 @@
         {% endfor %}
     {% endif %}
     <script type="text/javascript">
+        $(document).ready(()=>{
+            $('#tb').DataTable();
+        });
         $(".delete").click((e)=>{
             console.log("{% url 'deleteOrg' 1 %}")
             e.preventDefault();

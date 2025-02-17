@@ -45,6 +45,11 @@ def AddUser(request: HttpRequest):
         response = HttpResponseRedirect(reverse('indexUser'))
         try:
             currentUser: User = request.currentUser
+
+            dupUser = User.objects.filter(code_u = request.POST.get('code')).first()
+            if dupUser:
+                messages.error(request, 'Duplicate User code')
+                return response
             # format from input
             formatStr = "%d/%m/%Y"
             

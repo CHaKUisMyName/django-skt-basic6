@@ -26,6 +26,10 @@ def addLevel(request: HttpRequest):
     if request.method == "POST":
         response = HttpResponseRedirect(reverse('indexLv'))
         try:
+            dupLv = Level.objects.filter(code_lv = request.POST.get('code')).first()
+            if dupLv:
+                messages.error(request, "Duplicate Level Code")
+                return response
             currentUser: User = request.currentUser
             lv = Level()
             lv.code_lv = request.POST.get('code')
