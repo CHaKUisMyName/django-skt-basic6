@@ -34,13 +34,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% if not lvs|length %}
-                            <tr>
-                                <td colspan="6">
-                                    <span>No Data!</span>
-                                </td>
-                            </tr>
-                        {% endif %}
                         {% for lv in lvs %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
@@ -94,7 +87,12 @@
     {% endif %}
     <script type="text/javascript">
         $(document).ready(()=>{
-            $('#tb').DataTable();
+            $('#tb').DataTable({
+                "oLanguage": {
+                "sEmptyTable": "No Data!"
+            }
+            });
+            ActiveMenu("level");
         });
         $('.delete').click((e)=>{
             e.preventDefault();

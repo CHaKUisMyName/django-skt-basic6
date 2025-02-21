@@ -48,6 +48,9 @@
   padding: 1.15rem 1.5rem;
   text-align: center;
 }
+.sidebar-item {
+  list-style: none;
+}
 
 .sidebar-logo a {
   color: #fff;
@@ -71,8 +74,14 @@ a.sidebar-link {
   text-decoration: none;
 }
 
-a.sidebar-link:hover {
+a.sidebar-link:hover,
+a.sidebar-link.active {
   background-color: #f9f6f630;
+}
+
+/* เมนูหลักจะ Active ถ้ามีเมนูย่อยที่ Active */
+.sidebar-link.active + .collapse {
+  display: block !important;
 }
 
 .sidebar-link[data-bs-toggle="collapse"]::after {
@@ -84,12 +93,12 @@ a.sidebar-link:hover {
   position: absolute;
   right: 1.5rem;
   top: 1.4rem;
-  transform: rotate(-135deg);
+  transform: rotate(-135deg) scale(1.5);
   transition: all 0.2s ease-out;
 }
 
 .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
-  transform: rotate(45deg);
+  transform: rotate(45deg) scale(1.5);
   transition: all 0.2s ease-out;
 }
 

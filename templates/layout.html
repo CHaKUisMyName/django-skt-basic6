@@ -43,29 +43,50 @@
             <ul class="sidebar-nav">
               <li class="sidebar-item">
                 <!-- <a href="/" class="sidebar-link"> -->
-                <a href="{% url 'indexDashboard' %}" class="sidebar-link">
+                <a href="{% url 'indexDashboard' %}"
+                   class="sidebar-link"
+                   data-active="dashboard">
                   <i class="bi bi-house me-2"></i>
                   <span>Home</span>
                 </a>
               </li>
               <li class="sidebar-item">
                 <!-- <a href="/adduser" class="sidebar-link"> -->
-                <a href="{% url 'indexUser' %}" class="sidebar-link">
+                <a href="{% url 'indexUser' %}" class="sidebar-link" data-active="user">
                   <i class="bi bi-boxes me-2"></i>
                   <span>User</span>
                 </a>
               </li>
-              <li class="sidebar-item">
-                <a class="sidebar-link" href="{% url 'indexOrg' %}">
+              <li>
+                <a class="sidebar-link" data-bs-toggle="collapse" href="#menu1">
                   <i class="bi bi-bank me-2"></i>
                   <span>Organization</span>
                 </a>
-              </li>
-              <li class="sidebar-item">
-                <a href="{% url 'indexLv' %}" class="sidebar-link">
-                  <i class="bi bi-bounding-box-circles me-2"></i>
-                  <span>Level</span>
-                </a>
+                <ul class="collapse" id="menu1">
+                  <!-- <li>
+                    <a class="sidebar-link" data-bs-toggle="collapse" href="#submenu1">เมนูย่อย 1</a>
+                    <ul class="collapse" id="submenu1">
+                      <li>
+                        <a class="sidebar-link" href="#">เมนูย่อย 1.1</a>
+                      </li>
+                      <li>
+                        <a class="sidebar-link" href="#">เมนูย่อย 1.2</a>
+                      </li>
+                    </ul>
+                  </li> -->
+                  <li class="sidebar-item">
+                    <a class="sidebar-link" href="{% url 'indexOrg' %}" data-active="org">
+                      <i class="bi bi-bank me-2"></i>
+                      <span>Organization</span>
+                    </a>
+                  </li>
+                  <li class="sidebar-item">
+                    <a href="{% url 'indexLv' %}" class="sidebar-link" data-active="level">
+                      <i class="bi bi-bounding-box-circles me-2"></i>
+                      <span>Level</span>
+                    </a>
+                  </li>
+                </ul>
               </li>
             </ul>
             <hr class="border border-white border-1 opacity-50" />
@@ -113,6 +134,23 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
     <script src="{% static 'js/main.js'%}"></script>
+    <script type="text/JavaScript">
+      function ActiveMenu(menu) {
+        // ลบ Active ออกจากทุกเมนูที่ไม่ตรงกับ data-active
+        $('.sidebar-link:not([data-active="' + menu + '"])').removeClass('active');
+        
+        // เพิ่ม Active ให้เมนูที่ถูกเลือก
+        let activeLink = $('.sidebar-link[data-active="' + menu + '"]');
+        activeLink.addClass('active');
+        
+        // ถ้าคลิกเมนูย่อย ให้อัพเดตเมนูหลัก
+        let parentMenu = activeLink.closest('.collapse');
+        if (parentMenu.length) {
+          parentMenu.addClass('show'); // เปิดเมนูหลัก
+          // parentMenu.prev('.sidebar-link').addClass('active'); // เพิ่ม Active ให้เมนูหลัก
+        }
+      }
+    </script>
     {% block script %}{% endblock %}
   </body>
 </html>

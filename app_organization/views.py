@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.utils.timezone import now
 
+from app_level.models import Level
 from app_organization.models import Organization
 from app_user.models.user import User
 from app_user.utils import requiredLogin
@@ -14,10 +15,24 @@ def index(request: HttpRequest):
     orgList = Organization.objects.filter(isActive_org = 1)
     orgs = []
     if orgList.count() > 0:
-        orgs = orgList
-
+        lvs = Level.objects.filter(isActive_lv = 1)
+        lvName = ""
+        if lvs is None:
+            lvName = "-"
+        # ทำ list class object ให้เป็น dict {".":".",...} จะได้ไม่ต้อง Loop อีกครั้ง
+        lvDict = {lvl.id_lv:lvl.nameEN_lv for lvl in lvs} 
+        for org in orgList:
+            lvName = lvDict.get(org.id_lv_org, "-")
+            orgs.append({
+                "id_org":org.id_org,
+                "code":org.code_org,
+                "name": org.nameEN_org,
+                "level": lvName
+            })
+        
+        orgs.sort(key=lambda x: x["code"])
     context = {
-        "orgs": orgs
+        "orgs": orgs,
     }
     return render(request, 'organization/index.html', context)
 
@@ -35,6 +50,7 @@ def addOrg(request: HttpRequest):
             org.code_org = request.POST.get('code')
             org.nameEN_org = request.POST.get('nameen')
             org.nameTH_org = request.POST.get('nameth')
+            org.id_lv_org = request.POST.get('level')
             org.isActive_org = 1
             org.cid_u_org = currentUser.id_u
             org.cDate_org = now()
@@ -44,7 +60,21 @@ def addOrg(request: HttpRequest):
             messages.error(request, str(ex))
 
         return response
-    return render(request, 'organization/addorg.html')
+    else:
+        levelList = Level.objects.filter(isActive_lv = 1)
+        lvFirstChoice = Level()
+        lvFirstChoice.id_lv = 0
+        lvFirstChoice.nameEN_lv = "Select Level"
+        lvs = []
+        if levelList.count() > 0:
+            lvs.append(lvFirstChoice)
+            for lv in levelList:
+                lvs.append(lv)
+
+        context = {
+            "lvs": lvs,
+        }
+        return render(request, 'organization/addorg.html', context)
 
 @requiredLogin
 def editOrg(request: HttpRequest, idorg):
@@ -63,6 +93,7 @@ def editOrg(request: HttpRequest, idorg):
             org.code_org = request.POST.get('code')
             org.nameEN_org = request.POST.get('nameen')
             org.nameTH_org = request.POST.get('nameth')
+            org.id_lv_org = request.POST.get('level')
             org.uDate_org = now()
             org.uid_u_org = currentUser.id_u
             org.save()
@@ -76,8 +107,19 @@ def editOrg(request: HttpRequest, idorg):
             messages.error(request, "Not Found Organization.")
             return HttpResponseRedirect(reverse('indexOrg'))
         
+        levelList = Level.objects.filter(isActive_lv = 1)
+        lvFirstChoice = Level()
+        lvFirstChoice.id_lv = 0
+        lvFirstChoice.nameEN_lv = "Select Level"
+        lvs = []
+        if levelList.count() > 0:
+            lvs.append(lvFirstChoice)
+            for lv in levelList:
+                lvs.append(lv)
+        
         context = {
-            "org": org
+            "org": org,
+            "lvs":lvs
             }
         return render(request, 'organization/editorg.html', context)
 

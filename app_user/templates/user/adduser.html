@@ -99,6 +99,7 @@
     <script src="{% static 'js/brands.min.js' %}"></script>
     <script type="text/javascript">
         $(document).ready(()=>{
+            ActiveMenu("user");
             var dp = new tempusDominus.TempusDominus(document.getElementById("birthday"),{
                 useCurrent: false, // ไม่ให้มีค่าเริ่มต้นที่อาจผิดพลาด
                 localization: {

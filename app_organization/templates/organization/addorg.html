@@ -23,6 +23,12 @@
             <input type="text" id="nameen" name="nameen" class="form-control" required />
             <div class="invalid-feedback">Please input Data</div>
         </div>
+        <div class="col-sm-12 col-md-2">
+            <label for="level" class="form-label">Level</label>
+            <select id="level" class="form-select" name="level">
+                {% for lv in lvs %}<option value="{{ lv.id_lv }}">{{ lv.nameEN_lv }}</option>{% endfor %}
+            </select>
+        </div>
         <div class="col-12">
             <a href="{% url 'indexOrg' %}" class="btn btn-secondary me-2">
                 <span>Back</span>
@@ -36,6 +42,7 @@
 {% block script %}
     <script type="text/javascript">
     $(document).ready(()=>{
+        ActiveMenu("org");
         $("form").on('submit', (e)=>{
             if(!$(e.currentTarget)[0].checkValidity()){
                 e.preventDefault();

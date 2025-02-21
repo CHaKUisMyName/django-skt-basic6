@@ -27,26 +27,19 @@
                         <tr>
                             <th>#</th>
                             <th>Code</th>
-                            <th>Name TH</th>
-                            <th>Name EN</th>
+                            <th>Name</th>
+                            <th>Level</th>
                             <th>Edit</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% if not orgs|length %}
-                            <tr>
-                                <td colspan="6">
-                                    <span>No Data !</span>
-                                </td>
-                            </tr>
-                        {% endif %}
                         {% for org in orgs %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ org.code_org }}</td>
-                                <td>{{ org.nameTH_org }}</td>
-                                <td>{{ org.nameEN_org }}</td>
+                                <td>{{ org.code }}</td>
+                                <td>{{ org.name }}</td>
+                                <td>{{ org.level }}</td>
                                 <td>
                                     <a href="{% url 'editOrg' org.id_org %}" class="btn btn-info">
                                         <i class="bi bi-pencil-square"></i>
@@ -95,6 +88,7 @@
     <script type="text/javascript">
         $(document).ready(()=>{
             $('#tb').DataTable();
+            ActiveMenu("org");
         });
         $(".delete").click((e)=>{
             console.log("{% url 'deleteOrg' 1 %}")

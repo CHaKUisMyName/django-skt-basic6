@@ -5,6 +5,7 @@ class Organization(models.Model):
     id_org = models.IntegerField(primary_key= True)
     code_org = models.CharField(max_length= 100, null= True, blank= True)
     nameTH_org = models.CharField(max_length= 100, null= True, blank= True)
+    id_lv_org = models.IntegerField(null= True, blank= True)
     nameEN_org = models.CharField(max_length= 100, null= True, blank= True)
     isActive_org = models.SmallIntegerField(null= True)
     cDate_org = models.DateTimeField(null= True)
