@@ -26,4 +26,5 @@ urlpatterns = [
     path('logout', userViews.logout, name='logout'),
     path('org/', include('app_organization.urls')),
     path('lv/', include('app_level.urls')),
+    path('pst/', include('app_position.urls')),
 ]

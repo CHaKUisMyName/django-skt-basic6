@@ -53,13 +53,13 @@
               <li class="sidebar-item">
                 <!-- <a href="/adduser" class="sidebar-link"> -->
                 <a href="{% url 'indexUser' %}" class="sidebar-link" data-active="user">
-                  <i class="bi bi-boxes me-2"></i>
+                  <i class="bi bi-person-vcard me-2"></i>
                   <span>User</span>
                 </a>
               </li>
               <li>
                 <a class="sidebar-link" data-bs-toggle="collapse" href="#menu1">
-                  <i class="bi bi-bank me-2"></i>
+                  <i class="bi bi-boxes me-2"></i>
                   <span>Organization</span>
                 </a>
                 <ul class="collapse" id="menu1">
@@ -84,6 +84,12 @@
                     <a href="{% url 'indexLv' %}" class="sidebar-link" data-active="level">
                       <i class="bi bi-bounding-box-circles me-2"></i>
                       <span>Level</span>
+                    </a>
+                  </li>
+                  <li class="sidebar-item">
+                    <a href="{% url 'indexPst' %}" class="sidebar-link" data-active="pst">
+                      <i class="bi bi-node-plus me-2"></i>
+                      <span>Position</span>
                     </a>
                   </li>
                 </ul>

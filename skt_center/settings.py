@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'add_dashboard',
     'app_organization',
     'app_level',
+    'app_position',
 ]
 
 MIDDLEWARE = [

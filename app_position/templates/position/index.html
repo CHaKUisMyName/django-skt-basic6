@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block css %}
+    <link href="{% static 'css/sweetalert2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/dataTables.bootstrap5.css' %}" rel="stylesheet">
+{% endblock %}
+{% block title %}<title>Position</title>{% endblock %}
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1>Position</h1>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'addPst' %}">
+                <span>Add Position</span>
+            </a>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table id="tb" class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pst in psts %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ pst.code_pst }}</td>
+                                <td>{{ pst.nameEN_pst }}</td>
+                                <td>
+                                    <a href="{% url 'editPst' pst.id_pst %}" class="btn btn-info">
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Edit</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-danger delete"
+                                            data-idpst="{{ pst.id_pst }}">
+                                        <i class="bi bi-trash"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'js/datatables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.bootstrap5.js' %}"></script>
+    {% if messages %}
+        {% for message in messages %}
+            <script type="text/javascript">
+                $(document).ready(() => {
+                    const mssTags = "{{message.tags}}";
+                    console.log(mssTags);
+                    const mss = "{{message}}";
+                    const mssH = mssTags == "error" ? "Error":"Success";
+                    let txtColor = mssTags == "error" ? "error":"success";
+                
+                    Swal.fire({
+                        title: mssH,
+                        text: mss,
+                        icon: txtColor,
+                    });
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+    <script type="text/javascript">
+        $(document).ready(()=>{
+            $('#tb').DataTable();
+            ActiveMenu("pst");
+        });
+        $(".delete").click((e)=>{
+            e.preventDefault();
+            Swal.fire({
+                title: "Do you want to Delete the Position ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Delete",
+                didOpen:()=>{
+                    // ดักจับ event keydown ใน SweetAlert2 modal
+                    document.querySelector('.swal2-popup').addEventListener('keydown', (event) => {
+                        if (event.key === "Enter") {
+                            event.preventDefault(); // ป้องกัน Enter ไม่ให้กด confirm
+                        }
+                    });
+                },
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    const url = window.location.origin + window.location.pathname+"deletepst/"+$(e.currentTarget).data("idpst");
+                    const settings = {
+                        url: url,
+                        method: "GET",
+                    };
+                    $.ajax(settings)
+                    .done((res)=>{
+                        if(res.deleted == true){
+                            Swal.fire("Deleted!", "", "success").then(()=>{location.reload();});
+                        }else{
+                            Swal.fire(response.mss, "", "error");
+                        }
+                    })
+                    .fail((xhr, status, error)=>{
+                        console.error("เกิดข้อผิดพลาด: " + status + " - " + error);
+                        Swal.fire(error, "", "error");
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

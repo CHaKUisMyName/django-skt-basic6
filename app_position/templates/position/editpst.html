@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}<title>Edit Position</title>{% endblock %}
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1>Edit Position</h1>
+        </div>
+    </div>
+    <form method="post" class="row g-3" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="pstid" value="{{ pst.id_pst }}" />
+        <div class="col-md-3 col-sm-12">
+            <label for="code" class="form-label">Code</label>
+            <input type="text"
+                   id="code"
+                   name="code"
+                   class="form-control"
+                   value="{{ pst.code_pst }}"
+                   required />
+            <div class="invalid-feedback">Please input Data</div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <label for="nameth" class="form-label">Name TH</label>
+            <input type="text"
+                   id="nameth"
+                   name="nameth"
+                   class="form-control"
+                   value="{{ pst.nameTH_pst }}" />
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <label for="nameen" class="form-label">Name EN</label>
+            <input type="text"
+                   id="nameen"
+                   name="nameen"
+                   class="form-control"
+                   value="{{ pst.nameEN_pst }}"
+                   required />
+            <div class="invalid-feedback">Please input Data</div>
+        </div>
+        <div class="col-12">
+            <a href="{% url 'indexPst' %}" class="btn btn-secondary me-2">
+                <span>Back</span>
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <span>Submit</span>
+            </button>
+        </div>
+    </form>
+{% endblock %}
+{% block script %}
+    <script type="text/javascript">
+    $(document).ready(()=>{
+        ActiveMenu("pst");
+        $("form").on('submit', (e)=>{
+            if(!$(e.currentTarget)[0].checkValidity()){
+                e.preventDefault();
+            }
+            $(e.currentTarget).addClass('was-validated');
+        });
+    });
+    </script>
+{% endblock %}
