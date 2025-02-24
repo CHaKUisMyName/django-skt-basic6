@@ -14,8 +14,6 @@ class User(models.Model):
     birthDay_u = models.DateField(null= True, blank= True)
     isAdmin_u = models.SmallIntegerField(null= True)
     isActive_u = models.SmallIntegerField(null= True)
-    id_org_u = models.IntegerField(null= True,default= 0)
-    id_lv_u = models.IntegerField(null= True, default= 0)
     cDate_u = models.DateTimeField(null= True)
     uDate_u = models.DateTimeField(null= True)
     cById_u = models.IntegerField(null= True)

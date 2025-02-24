@@ -11,10 +11,11 @@ from app_user.utils import requiredLogin
 # Create your views here.
 @requiredLogin
 def index(request: HttpRequest):
-    positionList = Position.objects.filter(isActive_pst =  1)
+    positionList = Position.objects.filter(isActive_pst =  1).order_by('code_pst')
     psts = []
     if positionList.count() > 0:
         psts = positionList
+
     context = {
         "psts": psts
     }

@@ -6,6 +6,7 @@ class Position(models.Model):
     code_pst = models.CharField(max_length= 100, null= True, blank= True)
     nameTH_pst = models.CharField(max_length= 100, null= True, blank= True)
     nameEN_pst = models.CharField(max_length= 100, null= True, blank= True)
+    shortName_pst = models.CharField(max_length= 45, null= True, blank= True)
     isActive_pst = models.SmallIntegerField(null= True)
     cDate_pst = models.DateTimeField(null= True)
     uDate_pst = models.DateTimeField(null= True)

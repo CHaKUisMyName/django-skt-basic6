@@ -27,6 +27,7 @@
                         <tr>
                             <th>#</th>
                             <th>Code</th>
+                            <th>Short Name</th>
                             <th>Name</th>
                             <th>Edit</th>
                             <th>Delete</th>
@@ -37,6 +38,11 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ pst.code_pst }}</td>
+                                {% if pst.shortName_pst %}
+                                    <td>{{ pst.shortName_pst }}</td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
                                 <td>{{ pst.nameEN_pst }}</td>
                                 <td>
                                     <a href="{% url 'editPst' pst.id_pst %}" class="btn btn-info">

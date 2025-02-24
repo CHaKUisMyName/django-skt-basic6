@@ -9,10 +9,14 @@
     </div>
     <form method="post" class="row g-3" action="{% url 'addPst' %}" novalidate>
         {% csrf_token %}
-        <div class="col-md-3 col-sm-12">
+        <div class="col-md-2 col-sm-12">
             <label for="code" class="form-label">Code</label>
             <input type="text" id="code" name="code" class="form-control" required />
             <div class="invalid-feedback">Please input Data</div>
+        </div>
+        <div class="col-md-2 col-sm-12">
+            <label for="sname" class="form-label">Short Name</label>
+            <input type="text" id="sname" name="sname" class="form-control" />
         </div>
         <div class="col-md-4 col-sm-12">
             <label for="nameth" class="form-label">Name TH</label>
