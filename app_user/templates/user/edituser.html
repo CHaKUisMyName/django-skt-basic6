@@ -60,7 +60,7 @@
                    id="fnameth"
                    name="fnameth"
                    class="form-control"
-                   value="{{ user.fNameTH_u }}" />
+                   value="{{ user.fNameTH_u|default_if_none:'' }}" />
         </div>
         <div class="col-md-5 col-sm-12">
             <label for="lnameth" class="form-label">Last Name (TH)</label>
@@ -68,7 +68,7 @@
                    id="lnameth"
                    name="lnameth"
                    class="form-control"
-                   value="{{ user.lNameTH_u }}" />
+                   value="{{ user.lNameTH_u|default_if_none:'' }}" />
         </div>
         <div class="col-md-2 col-sm-12">
             <label for="nickname" class="form-label">Nick Name</label>
@@ -76,7 +76,7 @@
                    id="nickname"
                    name="nickname"
                    class="form-control"
-                   value="{{ user.nickName_u }}" />
+                   value="{{ user.nickName_u|default_if_none:'' }}" />
         </div>
         <div class="col-md-1 col-sm-12">
             <label for="nation" class="form-label">Naition</label>
@@ -84,7 +84,7 @@
                    id="nation"
                    name="nation"
                    class="form-control"
-                   value="{{ user.nation_u }}" />
+                   value="{{ user.nation_u|default_if_none:'' }}" />
         </div>
         <div class="col-md-3 col-sm-12">
             <label for="birthday" class="form-label">Birth Date</label>
@@ -106,7 +106,7 @@
                    id="phone"
                    name="phone"
                    class="form-control"
-                   value="{{ user.phone_u }}" />
+                   value="{{ user.phone_u|default_if_none:'' }}" />
         </div>
         <div class="col-12">
             <div class="form-check">

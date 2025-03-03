@@ -77,12 +77,18 @@ def AddUser(request: HttpRequest):
             user.code_u = request.POST.get('code')
             user.fNameEN_u = request.POST.get('fnameen')
             user.lNameEN_u = request.POST.get('lnameen')
-            user.fNameTH_u = request.POST.get('fnameth')
-            user.lNameTH_u = request.POST.get('lnameth')
-            user.nickName_u = request.POST.get('nickname')
-            user.nation_u = request.POST.get('nation')
-            user.email_u = request.POST.get('email')
-            user.phone_u = request.POST.get('phone')
+            if request.POST.get('fnameth'):
+                user.fNameTH_u = request.POST.get('fnameth')
+            if request.POST.get('lnameth'):
+                user.lNameTH_u = request.POST.get('lnameth')
+            if request.POST.get('nickname'):
+                user.nickName_u = request.POST.get('nickname')
+            if request.POST.get('nation'):
+                user.nation_u = request.POST.get('nation')
+            if request.POST.get('email'):
+                user.email_u = request.POST.get('email')
+            if request.POST.get('phone'):
+                user.phone_u = request.POST.get('phone')
             user.isAdmin_u = 1 if request.POST.get('isadmin') is not None else 0
             user.isActive_u = 1
             user.cById_u = currentUser.id_u
@@ -142,12 +148,18 @@ def EditUser(request:HttpRequest, iduser):
             user.code_u = request.POST.get('code')
             user.fNameEN_u = request.POST.get('fnameen')
             user.lNameEN_u = request.POST.get('lnameen')
-            user.fNameTH_u = request.POST.get('fnameth')
-            user.lNameTH_u = request.POST.get('lnameth')
-            user.nickName_u = request.POST.get('nickname')
-            user.nation_u = request.POST.get('nation')
-            user.email_u = request.POST.get('email')
-            user.phone_u = request.POST.get('phone')
+            if request.POST.get('fnameth'):
+                user.fNameTH_u = request.POST.get('fnameth')
+            if request.POST.get('lnameth'):
+                user.lNameTH_u = request.POST.get('lnameth')
+            if request.POST.get('nickname'):
+                user.nickName_u = request.POST.get('nickname')
+            if request.POST.get('nation'):
+                user.nation_u = request.POST.get('nation')
+            if request.POST.get('email'):
+                user.email_u = request.POST.get('email')
+            if request.POST.get('phone'):
+                user.phone_u = request.POST.get('phone')
             user.isAdmin_u = 1 if request.POST.get('isadmin') is not None else 0
             user.isActive_u = 1
             user.uById_u = currentUser.id_u
@@ -346,11 +358,12 @@ def AddSuperUser(request: HttpRequest):
             user.isAdmin_u = 1
             user.isActive_u = 1
             user.save()
+            userID = GetNextIdUser()
 
             authUser = AuthUser()
             authUser.user_auth = request.POST.get('uname')
             authUser.HashPassword(request.POST.get('pass'))
-            authUser.id_u_auth = user.id_u
+            authUser.id_u_auth = userID
             authUser.isActive_auth = 1
             authUser.save()
 

@@ -58,10 +58,10 @@
                                 {% endif %}
                                 {% if user.roles|length %}
                                     <td>
-                                        {% for role in user.roles %}<p>{{ role.pst }}</p>{% endfor %}
+                                        {% for role in user.roles %}<p>- {{ role.pst }}</p>{% endfor %}
                                     </td>
                                     <td>
-                                        {% for role in user.roles %}<p>{{ role.org }}</p>{% endfor %}
+                                        {% for role in user.roles %}<p>- {{ role.org }}</p>{% endfor %}
                                     </td>
                                 {% else %}
                                     <td>-</td>
@@ -132,7 +132,9 @@
     {% endif %}
     <script type="text/javascript">
         $(document).ready(()=>{
-            $('#tb').DataTable();
+            $('#tb').DataTable({
+                "pageLength": 100
+            });
             ActiveMenu("user");
         });
         $('.delete').click((e)=>{
