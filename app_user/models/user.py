@@ -22,3 +22,6 @@ class User(models.Model):
     class Meta:
         managed = False
         db_table = 'user'
+
+def GetNextIdUser():
+    return User.objects.all().count()

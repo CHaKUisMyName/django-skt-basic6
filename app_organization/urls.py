@@ -7,4 +7,5 @@ urlpatterns = [
     path('addorg/',views.addOrg, name='addOrg'),
     path('editorg/<idorg>', views.editOrg, name='editOrg'),
     path('deleteorg/<idorg>', views.deleteOrg, name="deleteOrg"),
+    path('orgdwn', views.GetOrgDropdown, name='orgdwn'),
 ]

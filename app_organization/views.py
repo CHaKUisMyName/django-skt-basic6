@@ -1,8 +1,10 @@
+import json
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.timezone import now
+from django.core import serializers
 
 from app_level.models import Level
 from app_organization.models import Organization
@@ -149,3 +151,22 @@ def deleteOrg(request: HttpRequest, idorg):
             "mss": str(ex)
         }
         return JsonResponse(data)
+    
+
+@requiredLogin
+def GetOrgDropdown(request: HttpRequest):
+    orgList = Organization.objects.filter(isActive_org = 1)
+    orgs =[]
+    if orgList.count() > 0:
+        orgs_json = json.loads(serializers.serialize('json', orgList))
+        firstOrg = {
+            'id_org': '',
+            'code_org': '-',
+            'nameEN_org': 'select organization',
+        }
+        # ดึงค่าเฉพาะ "fields" ออกจากแต่ละ object ใน orgs_json
+        # serializers.serialize('json', orgList) แยก id_org ออกไปไว้ที่ key "pk" แทนที่จะอยู่ใน "fields" ดังนั้น obj['fields'] จะไม่มี id_org
+        # ต้องดึงค่า "pk" แล้วเพิ่มเข้าไปใน "fields" เพื่อให้ id_org ติดมาด้วย
+        orgs = [firstOrg] + [{"id_org": obj["pk"], **obj["fields"]} for obj in orgs_json]
+
+    return JsonResponse(orgs, safe= False)

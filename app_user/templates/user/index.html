@@ -28,6 +28,8 @@
                             <th>#</th>
                             <th>Detail</th>
                             <th>Email</th>
+                            <th>Position</th>
+                            <th>Organization</th>
                             <th>Register</th>
                             <th>Repassword</th>
                             <th>Edit</th>
@@ -49,7 +51,22 @@
                                     <span>{{ user.fullName }}</span>
                                     <span>( {{ user.code }} )</span>
                                 </td>
-                                <td>{{ user.email }}</td>
+                                {% if user.email %}
+                                    <td>{{ user.email }}</td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                                {% if user.roles|length %}
+                                    <td>
+                                        {% for role in user.roles %}<p>{{ role.pst }}</p>{% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for role in user.roles %}<p>{{ role.org }}</p>{% endfor %}
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                    <td>-</td>
+                                {% endif %}
                                 <td>
                                     {% if user.hasAccount %}
                                         <!-- ซ่อนปุ่ม Register หาก user มี account -->

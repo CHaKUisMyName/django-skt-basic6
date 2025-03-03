@@ -11,4 +11,5 @@ urlpatterns = [
     path('super', views.AddSuperUser, name='addSuperUser'),
     path('regisuser/<iduser>', views.regisUser, name='regisUser'),
     path('repass/<iduser>', views.Changepassword, name='repassUser'),
+    path('userrole/<iduser>', views.GetUserRole, name='getUserRole'),
 ]

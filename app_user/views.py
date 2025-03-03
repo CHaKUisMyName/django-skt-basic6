@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import hashlib
+import json
 import os
 import pprint
 import secrets
@@ -8,10 +9,13 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.timezone import now
-
+from django.core import serializers
+from app_organization.models import Organization
+from app_position.models import Position
 from app_user.models.authsession import AuthSession
 from app_user.models.authuser import AuthUser, VerifyPAssword
-from app_user.models.user import User
+from app_user.models.user import GetNextIdUser, User
+from app_user.models.userrole import UserRole
 from app_user.utils import requiredLogin
 
 # Create your views here.
@@ -26,12 +30,26 @@ def index(request: HttpRequest):
             if authUsers.count() > 0:
                 hasAccount = any(authUser.id_u_auth == user.id_u for authUser in authUsers)
 
+            uRoleList = UserRole.objects.filter(id_u_ur = user.id_u)
+            uRoles = []
+            if uRoleList.count():
+                for uRole in uRoleList:
+                    org = Organization.objects.filter(id_org = uRole.id_org_ur).first()
+                    pst = Position.objects.filter(id_pst = uRole.id_pst_ur).first()
+                    if org and pst:
+                        uRoles.append({
+                            "org": org.nameEN_org,
+                            "pst": pst.nameEN_pst,
+                        })
+
+
             users.append({
                 "id_u": user.id_u,
                 "fullName": user.fNameEN_u + " " + user.lNameEN_u,
                 "code": user.code_u,
                 "email": user.email_u,
                 "hasAccount": hasAccount,
+                "roles": uRoles,
             })
 
     context = {
@@ -43,6 +61,8 @@ def index(request: HttpRequest):
 def AddUser(request: HttpRequest):
     if request.method == "POST":
         response = HttpResponseRedirect(reverse('indexUser'))
+        # get list data เช่น checkbox multiple
+        # print(request.POST.getlist('pst'))
         try:
             currentUser: User = request.currentUser
 
@@ -67,20 +87,38 @@ def AddUser(request: HttpRequest):
             user.isActive_u = 1
             user.cById_u = currentUser.id_u
             user.cDate_u = now()
+            print(request.POST.get('birthday'))
             if request.POST.get('birthday'):
                 user.birthDay_u = datetime.strptime(str(request.POST.get('birthday')),formatStr).date()
-            else:
-                user.birthDay_u = ""
+            # else:
+            #     user.birthDay_u = ""
 
-            user.save()
+            user.save(force_insert=True)
+            userID = GetNextIdUser()
+            print(userID)
+
+            pstList = request.POST.getlist('pst')
+            orgList = request.POST.getlist('org')
+            if len(pstList) != len(orgList):
+                messages.error(request, "Role data is worng")
+                return response
+            roleData = [{"pst": pst, "org": org} for pst, org in zip(pstList, orgList)]
+            
+            for role in roleData:
+                userRole = UserRole()
+                userRole.id_pst_ur = role['pst']
+                userRole.id_org_ur = role['org']
+                userRole.id_u_ur = userID
+                userRole.save()
+                
             messages.success(request, "Save Success")
             return response
         except Exception as ex:
             print(str(ex))
             messages.error(request, str(ex))
             return response
-
-    return render(request, 'user/adduser.html')
+    else:
+        return render(request, 'user/adduser.html')
 
 @requiredLogin
 def EditUser(request:HttpRequest, iduser):
@@ -116,10 +154,25 @@ def EditUser(request:HttpRequest, iduser):
             # user.uDate_u = now()
             if request.POST.get('birthday'):
                 user.birthDay_u = datetime.strptime(str(request.POST.get('birthday')),formatStr).date()
-            else:
-                user.birthDay_u = ""
             
-            user.save()
+            user.save(force_update=True)
+
+            uRole = UserRole.objects.filter(id_u_ur = uid)
+            if uRole.count() > 0:
+                uRole.delete()
+
+            pstList = request.POST.getlist('pst')
+            orgList = request.POST.getlist('org')
+            if len(pstList) != len(orgList):
+                messages.error(request, "Role data is worng")
+                return response
+            roleData = [{"pst": pst, "org": org} for pst, org in zip(pstList, orgList)]
+            for role in roleData:
+                userRole = UserRole()
+                userRole.id_pst_ur = role['pst']
+                userRole.id_org_ur = role['org']
+                userRole.id_u_ur = uid
+                userRole.save()
             
             messages.success(request, 'Success')
         except Exception as ex:
@@ -148,21 +201,15 @@ def Delete(request: HttpRequest, iduser):
             }
             return JsonResponse(data)
         
-        authUser = AuthUser.objects.filter(id_u_auth = user.id_u).first()
-        if authUser is None:
-            data = {
-                "deleted": False,
-                "mss": "not found user"
-            }
-            return JsonResponse(data)
-
         user.isActive_u = 0
         user.uDate_u = now()
         user.uById_u = currentUser.id_u
         user.save()
-
-        authUser.isActive_auth = 0
-        authUser.save()
+        
+        authUser = AuthUser.objects.filter(id_u_auth = user.id_u).first()
+        if authUser:
+            authUser.isActive_auth = 0
+            authUser.save()
 
         rData = {
             "deleted": True,
@@ -311,3 +358,15 @@ def AddSuperUser(request: HttpRequest):
         except Exception as ex:
             return JsonResponse({'success': False, 'mss': repr(ex)})
     return render(request, 'user/addsuperuser.html')
+
+@requiredLogin
+def GetUserRole(request: HttpRequest, iduser):
+    userRoles = []
+    uRoleList = UserRole.objects.filter(id_u_ur = iduser)
+    if uRoleList.count() > 0:
+        uRJson = json.loads(serializers.serialize('json', uRoleList))
+        # ต้องดึงค่า "pk" แล้วเพิ่มเข้าไปใน "fields" pk คือ id_ur
+        userRoles = [{"id_ur": obj["pk"], **obj["fields"]} for obj in uRJson]
+        print(userRoles)
+
+    return JsonResponse(userRoles, safe=False)

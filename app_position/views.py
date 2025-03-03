@@ -1,8 +1,10 @@
+import json
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.timezone import now
+from django.core import serializers
 
 from app_position.models import Position
 from app_user.models.user import User
@@ -109,3 +111,20 @@ def deletePst(request: HttpRequest, idpst):
             "mss": str(ex)
         }
         return JsonResponse(data)
+    
+@requiredLogin
+def GetPositionDropdown(request: HttpRequest):
+    pstList = Position.objects.filter(isActive_pst = 1)
+    psts = []
+    if pstList.count() > 0:
+        psts_json = json.loads(serializers.serialize('json', pstList))
+        firstPst = {
+            'id_pst': "",
+            'code_pst': '-',
+            'nameEN_pst': 'select position'
+        }
+        # ดึงค่าเฉพาะ "fields" ออกจากแต่ละ object ใน psts_json
+        # serializers.serialize('json', pstList) แยก id_pst ออกไปไว้ที่ key "pk" แทนที่จะอยู่ใน "fields" ดังนั้น obj['fields'] จะไม่มี id_pst
+        # ต้องดึงค่า "pk" แล้วเพิ่มเข้าไปใน "fields" เพื่อให้ id_pst ติดมาด้วย
+        psts = [firstPst] + [{"id_pst": obj["pk"], **obj["fields"]} for obj in psts_json]
+    return JsonResponse(psts, safe= False)

@@ -12,6 +12,10 @@
           rel="stylesheet">
     <link href="{% static 'css/fontawesome/css/brands.min.css' %}"
           rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+          rel="stylesheet" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 {% endblock %}
 {% block title %}<title>Edit User</title>{% endblock %}
 {% block content %}
@@ -22,7 +26,7 @@
     </div>
     <form method="post" class="row g-3" novalidate>
         {% csrf_token %}
-        <input type="hidden" name="uid" value="{{ user.id_u }}" />
+        <input type="hidden" id="uid" name="uid" value="{{ user.id_u }}" />
         <div class="col-md-2 col-sm-12">
             <label for="code" class="form-label">Employee Code</label>
             <input type="text"
@@ -118,6 +122,27 @@
                 <label for="isadmin" class="form-check-label">Is Admin</label>
             </div>
         </div>
+        <div class="col-md-6 col-sm-12 mt-5 mb-3">
+            <div class="row">
+                <div class="col-12">
+                    <h1>Role User</h1>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <button type="button" id="addRole" class="btn btn-success mb-3 float-end">
+                    <span>Add Role</span>
+                </button>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Organization</th>
+                            <th>Position</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
         <div class="col-12">
             <a href="{% url 'indexUser' %}" class="btn btn-secondary me-2">
                 <span>Back</span>
@@ -139,8 +164,9 @@
     <script src="{% static 'js/fontawesome.min.js' %}"></script>
     <script src="{% static 'js/solid.min.js' %}"></script>
     <script src="{% static 'js/brands.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script type="text/javascript">
-        $(document).ready(()=>{
+        $(document).ready(async ()=>{
             ActiveMenu("user");
             const dp = new tempusDominus.TempusDominus(document.getElementById("birthday"),{
                 localization: {
@@ -167,7 +193,10 @@
                     },
                 },
             });
-            dp.dates.setValue(tempusDominus.DateTime.convert(new Date("{{user.birthDay_u|date:'Y-m-d'}}")));
+            let birthDate = "{{ user.birthDay_u|date:'Y-m-d' }}";
+            if(birthDate){
+                dp.dates.setValue(tempusDominus.DateTime.convert(new Date("{{user.birthDay_u|date:'Y-m-d'}}")));
+            }
             
             $('form').on('submit', function (event) {
                 if (!this.checkValidity()) {
@@ -195,6 +224,110 @@
                 }
                 $("form").addClass("was-validated"); // ทำให้ Bootstrap แสดงผล
             });
+            await UserRoleOnLoad($("#uid").val());
+        });
+        const GetPosition = async ()=>{
+            return $.get(window.location.origin + "/pst/pstdwn");
+        };
+        const GetOrganization = async ()=>{
+            return $.get(window.location.origin + "/org/orgdwn");
+        };
+        const GetUserRole = async (iduser)=>{
+            return $.get(window.location.origin + "/user/userrole/"+iduser);
+        };
+        $('#addRole').click(async (e)=>{
+            e.preventDefault();
+            let psts = await GetPosition();
+            let orgs = await GetOrganization();
+
+            AddRole(psts, orgs);
+            $('.form-select').select2({
+                theme: 'bootstrap-5'
+            });
+        });
+        const CreatePstDropdown = (positions, selectedPst = null)=>{
+            const select = $("<select>").addClass('form-select');
+            select.prop("required", true);
+            select.prop("name", "pst");
+            $.each(positions, (index, value)=>{
+                const option = $("<option>");
+                option.val(value.id_pst);
+                option.text(value.nameEN_pst);
+                select.append(option);
+            });
+            if(selectedPst){
+                select.val(selectedPst);
+            }
+            return select;
+        };
+        const CreateOrgDropdown = (organizations, selectedOrg = null)=>{
+            const select = $("<select>").addClass('form-select');
+            select.prop("required", true);
+            select.prop("name", "org");
+            $.each(organizations, (index, value)=>{
+                const option = $("<option>");
+                option.val(value.id_org);
+                option.text(value.nameEN_org);
+                select.append(option);
+            });
+            if(selectedOrg){
+                select.val(selectedOrg);
+            }
+            return select;
+        };
+        const AddRole = (positions, organizations, selectedPst = null, selectedOrg = null)=>{
+            // -- create dropdown position
+            const org = CreatePstDropdown(positions, selectedPst);
+            // -- create dropdown organization
+            const pos = CreateOrgDropdown(organizations, selectedOrg);
+            // -- div invalid feed back
+            const invalidDiv = $("<div>").addClass("invalid-feedback");
+            invalidDiv.text('Please select Data');
+
+            const button = $("<button>",{ 
+                type: "button", 
+                text: "Delete", 
+                class:"btn btn-danger delete",
+            });
+            
+            // -- <td>
+            const td = $("<td>");
+            
+            // -- td organization column
+            const tdOrg = td.clone().append(org);
+            tdOrg.append(invalidDiv.clone());
+            // -- td position column
+            const tdPos = td.clone().append(pos);
+            tdPos.append(invalidDiv.clone());
+            // -- td delete button column
+            const tdDl = td.clone().append(button);
+            // -- <tr>
+            const tr = $("<tr>");
+            tr.append(tdPos);
+            tr.append(tdOrg);
+            tr.append(tdDl);
+            if(!$('.table > tbody')[0]){
+                const tbody = $("<tbody>");
+                tbody.append(tr);
+                const table = $('.table');
+                table.append(tbody);
+            }else{
+                const table = $(".table > tbody");
+                table.append(tr);
+            }
+            
+        };
+        const UserRoleOnLoad = async (iduser)=>{
+            let role = await GetUserRole(iduser);
+            let psts = await GetPosition();
+            let orgs = await GetOrganization();
+            
+            $.each(role, (index, value)=>{
+                AddRole(psts, orgs, value.id_pst_ur, value.id_org_ur);
+            });
+        };
+        $(document).on("click", ".delete", function(e) {
+            $(e.currentTarget).parent('td').parent("tr").remove();
         });
     </script>
 {% endblock %}

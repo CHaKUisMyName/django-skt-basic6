@@ -7,4 +7,5 @@ urlpatterns = [
     path('addpst/', views.addPst, name='addPst'),
     path('editpst/<idpst>', views.editPst, name='editPst'),
     path('deletepst/<idpst>', views.deletePst, name='deletePst'),
+    path('pstdwn', views.GetPositionDropdown, name='pstdwn'),
 ]
