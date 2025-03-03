@@ -21,7 +21,7 @@ from app_user.utils import requiredLogin
 # Create your views here.
 @requiredLogin
 def index(request: HttpRequest):
-    usersList = User.objects.filter(isActive_u = 1)
+    usersList = User.objects.filter(isActive_u = 1).exclude(code_u="000")
     users = []
     if usersList.count() > 0:
         authUsers = AuthUser.objects.filter(isActive_auth = 1)
