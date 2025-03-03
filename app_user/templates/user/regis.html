@@ -7,6 +7,14 @@
             <h1>Register User</h1>
         </div>
     </div>
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <!-- <span class="me-3 text-muted">User :</span> -->
+            <span class="display-6">({{ user.code_u }})</span>
+            <span class="display-6">{{ user.fNameEN_u }}</span>
+            <span class="display-6">{{ user.lNameEN_u }}</span>
+        </div>
+    </div>
     <form method="post" class="row g-3 mb-3" novalidate>
         {% csrf_token %}
         <div class="col-md-6 col-sm-12">

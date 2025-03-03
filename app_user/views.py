@@ -301,8 +301,12 @@ def regisUser(request: HttpRequest, iduser):
         except Exception as ex:
             messages.error(request, str(ex))
         return HttpResponseRedirect(reverse('indexUser'))
+    else:
+        context = {
+            "user": user
+        }
+        return render(request, 'user/regis.html', context)
 
-    return render(request, 'user/regis.html')
 
 @requiredLogin
 def Changepassword(request: HttpRequest, iduser):
@@ -344,7 +348,8 @@ def Changepassword(request: HttpRequest, iduser):
             messages.error(request, "Not Found Auth User Data!")
             return HttpResponseRedirect(reverse('indexUser'))
         context = {
-            "authUser": authUser
+            "authUser": authUser,
+            "user": user,
         }
         return render(request, 'user/changepassword.html', context)
 
