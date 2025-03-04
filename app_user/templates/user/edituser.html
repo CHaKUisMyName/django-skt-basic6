@@ -2,9 +2,7 @@
 {% load static %}
 {% block css %}
     <!-- Tempus Dominus Styles -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css"
-          crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/tempus-dominus.css' %}" />
     <!-- fontawesome -->
     <link href="{% static 'css/fontawesome/css/fontawesome.min.css' %}"
           rel="stylesheet">
@@ -12,10 +10,9 @@
           rel="stylesheet">
     <link href="{% static 'css/fontawesome/css/brands.min.css' %}"
           rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-          rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}" />
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+          href="{% static 'css/select2-bootstrap-5-theme.min.css' %}" />
 {% endblock %}
 {% block title %}<title>Edit User</title>{% endblock %}
 {% block content %}
@@ -155,16 +152,14 @@
 {% endblock %}
 {% block script %}
     <!-- Popperjs -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-            crossorigin="anonymous"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
     <!-- Tempus Dominus JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js"
-            crossorigin="anonymous"></script>
+    <script src="{% static 'js/tempus-dominus.js' %}"></script>
     <!-- fontawesome -->
     <script src="{% static 'js/fontawesome.min.js' %}"></script>
     <script src="{% static 'js/solid.min.js' %}"></script>
     <script src="{% static 'js/brands.min.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{% static 'js/select2.min.js' %}"></script>
     <script type="text/javascript">
         $(document).ready(async ()=>{
             ActiveMenu("user");
